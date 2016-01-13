@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/GradleTranslationPlugin.iml" filepath="$PROJECT_DIR$/GradleTranslationPlugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/translation-example/translation-example.iml" filepath="$PROJECT_DIR$/translation-example/translation-example.iml" />
+      <module fileurl="file://$PROJECT_DIR$/translation-plugin/translation-plugin.iml" filepath="$PROJECT_DIR$/translation-plugin/translation-plugin.iml" />
+    </modules>
+  </component>
+</project>

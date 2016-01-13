@@ -1,0 +1,134 @@
+apply plugin: 'groovy'
+apply plugin: 'signing'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_7
+
+// Artifact settings
+group = 'dk.nodes.nstack'
+version = '0.1'
+archivesBaseName = 'translation'
+
+def _name = 'NStack Gradle Plugin'
+def _description = 'Gradle extensions for NStack.io translations'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile 'com.android.tools.build:gradle:1.3.1'
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': _name, 'Implementation-Version': version
+    }
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from groovydoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+task installArchives(type: Upload) {
+    description "Installs the artifacts to the local Maven repository."
+    repositories.mavenInstaller {
+        configuration = configurations.default
+        pom.groupId = group
+        pom.artifactId = archivesBaseName
+        pom.version = version
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId group
+            artifactId archivesBaseName
+            version version
+
+            from components.java
+        }
+    }
+}
+
+// Username & password for Sonatype, stored in gradle.properties
+def _ossrhUsername = this.properties['NEXUS_USERNAME']
+def _ossrhPassword = this.properties['NEXUS_PASSWORD']
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+
+            //use: gradle uploadArchives -Premote
+            if (this.hasProperty('remote')) {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: _ossrhUsername, password: _ossrhPassword)
+                }
+            } else {
+                repository(url: uri('./build/repo'))
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: _ossrhUsername, password: _ossrhPassword)
+            }
+
+            pom.project {
+                name _name
+                packaging 'jar'
+                artifactId archivesBaseName
+                description _description
+                url 'https://github.com/nodes-android/nstack-gradle'
+                inceptionYear '2015'
+
+                scm {
+                    url 'https://github.com/nodes-android/nstack-gradle'
+                    connection 'scm:https://github.com/nodes-android/nstack-gradle.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'johsoe'
+                        name 'Johnny Sørensen'
+                        email 'joso@nodes.dk'
+                    }
+                }
+
+                issueManagement {
+                    system 'GitHub issues'
+                    url 'https://github.com/nodes-android/nstack-gradle/issues'
+                }
+            }
+        }
+    }
+}
