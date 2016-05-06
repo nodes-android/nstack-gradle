@@ -218,7 +218,5 @@
     <orderEntry type="library" exported="" name="joda-time-2.8.2" level="project" />
     <orderEntry type="library" exported="" name="gradle-tooling-api-builders-2.10" level="project" />
     <orderEntry type="library" exported="" name="translation-plugin.translation-0.1" level="project" />
-    <orderEntry type="library" exported="" name="translation-plugin.translation-0.1-javadoc" level="project" />
-    <orderEntry type="library" exported="" name="translation-plugin.translation-0.1-sources" level="project" />
   </component>
 </module>
