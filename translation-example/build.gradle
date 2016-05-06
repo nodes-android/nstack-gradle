@@ -8,7 +8,7 @@ buildscript {
         }
 
         classpath 'com.android.tools.build:gradle:2.1.0'
-        classpath 'dk.nodes.nstack:translation:0.1'
+        classpath 'dk.nodes.nstack:translation:0.28'
     }
 }
 
@@ -44,8 +44,6 @@ android {
 
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'dk.nodes.nstack:translation:0.1'
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'dk.nodes.nstack:translation:0.2'
 }

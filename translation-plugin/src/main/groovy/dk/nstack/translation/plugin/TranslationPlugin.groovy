@@ -10,6 +10,7 @@ import org.gradle.api.file.FileVisitDetails
 class TranslationPlugin implements Plugin<Project> {
 
     def project = null
+    def pathPrefix = ""
 
     void apply(Project project) {
         project.setDescription("Gradle extensions for nstack.io translations")
@@ -42,6 +43,10 @@ class TranslationPlugin implements Plugin<Project> {
         }
     }
 
+    /**
+     * URL params from translation settings
+     * @return Absolute URL to nstack
+     */
     String generateContentUrl() {
         def url = this.project.translation.contentUrl + "?"
 
@@ -60,6 +65,11 @@ class TranslationPlugin implements Plugin<Project> {
         return url
     }
 
+    /**
+     * Fetch json from nstack with apiKey and appId
+     * @param project
+     * @return JsonSlurper object
+     */
     Object fetchJson( project ) {
         def inputFile = new URL(generateContentUrl())
 
@@ -76,9 +86,44 @@ class TranslationPlugin implements Plugin<Project> {
         return json
     }
 
+    /**
+     * Find the path for the Translation.java file
+     * This file is where we generate main class and inner classes from the JSON file from nstack
+     * */
     void findPaths() {
+        // Find AndroidManifest.xml
+        def results = []
         def manifestFilePath = "src/main/AndroidManifest.xml"
-        def manifest = new groovy.util.XmlSlurper().parse(manifestFilePath)
+        project.fileTree(".").visit { FileVisitDetails details ->
+            if (details.file.name.contains("AndroidManifest.xml") && details.relativePath.toString().contains("src")) {
+                results << details.relativePath
+                println "found --> " + details.relativePath.toString()
+            }
+        }
+
+        if (results.size() == 0) {
+            throw new RuntimeException("No AndroidManifest.xml file found!")
+        } else {
+            manifestFilePath = results.first()
+        }
+
+        def manifest;
+
+        try {
+            manifest = new groovy.util.XmlSlurper().parse(manifestFilePath.toString())
+        } catch(Exception e) {
+            println "Failed opening: " + manifestFilePath.toString()
+            println "Trying: app/" + manifestFilePath.toString()
+            pathPrefix = "app/"
+
+            try {
+                manifest = new groovy.util.XmlSlurper().parse(pathPrefix + manifestFilePath.toString())
+            } catch (Exception ex) {
+                println "Failed that as well, stopping :("
+                return
+            }
+        }
+
         String packageName = manifest.@package.text()
 
         // Find path to our Translation.class
@@ -105,6 +150,9 @@ class TranslationPlugin implements Plugin<Project> {
         }
     }
 
+    /**
+     * Write the json response to a file, which we can parse later as a fallback
+     * */
     void generateFallbackFile( json, project ) {
         def translationsFile = new File(project.translation.assetsPath)
         def assetsPath = project.translation.assetsPath.substring(0, project.translation.assetsPath.lastIndexOf('/'))
@@ -115,8 +163,11 @@ class TranslationPlugin implements Plugin<Project> {
         translationsFile.write( json.toString() )
     }
 
+    /**
+     * Generate our Translation.java file to project.translation.classPath
+     * */
     void generateJavaClass( json, project ) {
-        def translationsFile = new File(project.translation.classPath)
+        def translationsFile = new File(pathPrefix + project.translation.classPath)
 
         if( ! translationsFile.exists() ) {
             println "Java class does not exist, or path is wrong: " + project.translation.classPath
@@ -146,6 +197,12 @@ class TranslationPlugin implements Plugin<Project> {
         translationsFile.write( translationClassString )
     }
 
+    /**
+     *
+     * @param className
+     * @param data
+     * @return String Inner static class with key/value strings
+     */
     String generateInnerClass(className, data) {
         println "generateInnerClass from: " + data
 
@@ -159,6 +216,11 @@ class TranslationPlugin implements Plugin<Project> {
         return innerClass
     }
 
+    /**
+     * Write translation data to xml as a strings resource file
+     * @param json Result object of JsonSlurper parsing
+     * @param project Reference to project scope
+     */
     void generateStringsResource( json, project ) {
         def sw = new StringWriter()
         def xml = new groovy.xml.MarkupBuilder(sw)
