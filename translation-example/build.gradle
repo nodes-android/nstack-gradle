@@ -8,12 +8,11 @@ buildscript {
         }
 
         classpath 'com.android.tools.build:gradle:2.1.0'
-        classpath 'dk.nodes.nstack:translation:0.28'
+        classpath 'dk.nodes.nstack:translation:0.4-TEST'
     }
 }
 
 apply plugin: 'com.android.application'
-
 apply plugin: 'dk.nstack.translation.plugin'
 
 translation {
@@ -45,5 +44,5 @@ android {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
-    compile 'dk.nodes.nstack:translation:0.2'
+    compile 'dk.nodes.nstack:translation:0.4-TEST'
 }

@@ -17,7 +17,7 @@ buildscript {
     }
     dependencies {
         ...
-        classpath 'dk.nodes.nstack:translation:0.3'
+        classpath 'dk.nodes.nstack:translation:0.31'
     }
 }
 ```
@@ -30,11 +30,6 @@ translation {
     appId = "<generated app id from nstack.io>"
     apiKey = "<generated app key from nstack.io>"
     acceptHeader = "<accept header e.g. da-DK>"
-}
-
-dependencies {
-    ...
-    compile 'dk.nodes.nstack:translation:0.3'
 }
 ```
 
