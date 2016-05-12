@@ -139,14 +139,25 @@ class TranslationPlugin implements Plugin<Project> {
                 throw new RuntimeException("No Translation.class file found!")
             } else {
                 project.translation.classPath = names.first()
+                println "Found classPath: " + names.first()
             }
         }
 
         // Find package path for when generating class
-        if( project.translation.modelPath == null ) {
-            project.translation.modelPath = packageName + ".util.model"
+        try {
+            String possibleModelPath = project.translation.classPath
+            possibleModelPath = possibleModelPath.replace("/", ".")
+            possibleModelPath = possibleModelPath.substring(
+                    possibleModelPath.indexOf(packageName),
+                    possibleModelPath.indexOf(".Translation.java")
+            );
 
-            println project.translation.modelPath
+            project.translation.modelPath = possibleModelPath;
+
+            println "Found modelPath: " + possibleModelPath
+        }
+        catch (Exception e1) {
+            throw new RuntimeException("Could not determine modelPath from: " + project.translation.classPath)
         }
     }
 
