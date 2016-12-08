@@ -1,7 +1,7 @@
 package dk.nstack.translation.plugin
 
 class TranslationExtension {
-    final String contentUrl = "https://baas.like.st/api/v1/translate/mobile/keys"
+    final String contentUrl = "https://nstack.io/api/v1/translate/mobile/keys"
     String appId = ""
     String apiKey = ""
     String modelPath = null

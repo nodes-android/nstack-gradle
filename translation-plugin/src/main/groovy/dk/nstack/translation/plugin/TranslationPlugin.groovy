@@ -1,6 +1,7 @@
 package dk.nstack.translation.plugin
 
 import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.LibraryPlugin
 import groovy.json.JsonSlurper
 import groovy.json.StringEscapeUtils
 import org.gradle.api.Plugin
@@ -16,8 +17,9 @@ class TranslationPlugin implements Plugin<Project> {
         project.setDescription("Gradle extensions for nstack.io translations")
 
         def hasApp = project.plugins.withType(AppPlugin)
-        if (!hasApp) {
-            throw new IllegalStateException("'android' plugin required.")
+        def hasLib = project.plugins.withType(LibraryPlugin)
+        if (!hasApp && !hasLib) {
+            throw new IllegalStateException("NSTACK GRADLE PLUGIN: 'android' or 'android-library' plugin required.")
         }
 
         // Add the extension object
@@ -76,7 +78,8 @@ class TranslationPlugin implements Plugin<Project> {
         def jsonText = inputFile.getText(requestProperties: [
                 'Accept-Language':project.translation.acceptHeader,
                 'X-Application-Id':project.translation.appId,
-                'X-Rest-Api-Key':project.translation.apiKey
+                'X-Rest-Api-Key':project.translation.apiKey,
+                'N-Meta': 'androidstudio;debug;1.0;1.0;gradleplugin'
         ]);
 
         generateFallbackFile(jsonText, project)
@@ -109,19 +112,25 @@ class TranslationPlugin implements Plugin<Project> {
 
         def manifest;
 
-        try {
-            manifest = new groovy.util.XmlSlurper().parse(manifestFilePath.toString())
-        } catch(Exception e) {
-            println "Failed opening: " + manifestFilePath.toString()
-            println "Trying: app/" + manifestFilePath.toString()
-            pathPrefix = "app/"
+        def rootManifest = new File(manifestFilePath.toString())
+        def appManifest = new File("app/" + manifestFilePath.toString())
+        def domainManifest = new File("domain/" + manifestFilePath.toString())
+        def pathPicked;
 
-            try {
-                manifest = new groovy.util.XmlSlurper().parse(pathPrefix + manifestFilePath.toString())
-            } catch (Exception ex) {
-                println "Failed that as well, stopping :("
-                return
-            }
+        if (rootManifest.exists()) {
+            pathPicked = rootManifest
+        } else if (appManifest.exists()) {
+            pathPicked = appManifest
+        } else if (domainManifest.exists()) {
+            pathPicked = domainManifest
+        }
+
+        try {
+            manifest = new groovy.util.XmlSlurper().parse(pathPicked)
+        } catch(Exception e) {
+            println e.toString()
+            println "Failed opening: " + pathPicked
+            return
         }
 
         String packageName = manifest.@package.text()
@@ -132,6 +141,8 @@ class TranslationPlugin implements Plugin<Project> {
             project.fileTree(".").visit { FileVisitDetails details ->
                 if (details.file.name.contains("Translation.java")) {
                     names << details.relativePath
+                    println details.toString()
+                    println details.path
                 }
             }
 
@@ -178,10 +189,14 @@ class TranslationPlugin implements Plugin<Project> {
      * Generate our Translation.java file to project.translation.classPath
      * */
     void generateJavaClass( json, project ) {
-        def translationsFile = new File(pathPrefix + project.translation.classPath)
+        def translationsFile = new File(project.translation.classPath)
 
         if( ! translationsFile.exists() ) {
-            println "Java class does not exist, or path is wrong: " + project.translation.classPath
+            println "Java class does not exist, or path is wrong: " + pathPrefix + project.translation.classPath
+            println "pathPrefix: " + pathPrefix
+            println "classPath: " + project.translation.classPath
+            pathPrefix = 'app/'
+            translationsFile = new File(pathPrefix + project.translation.classPath)
         }
 
         def translationClassString = "package ${project.translation.modelPath};\n\n"

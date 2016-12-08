@@ -1,6 +1,6 @@
 // Artifact settings
 group = 'dk.nodes.nstack'
-version = '0.35'
+version = '0.5'
 archivesBaseName = 'translation'
 
 def _name = 'NStack Gradle Plugin'
