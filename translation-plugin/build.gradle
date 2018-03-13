@@ -16,7 +16,7 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'com.android.tools.build:gradle:2.1.3'
+    compile 'com.android.tools.build:gradle:3.0.1'
 }
 
 task installArchives(type: Upload) {
@@ -25,7 +25,7 @@ task installArchives(type: Upload) {
         configuration = configurations.default
         pom.groupId = 'dk.nodes.nstack'
         pom.artifactId = 'translation'
-        pom.version = '0.7-LOCAL'
+        pom.version = '1.0-LOCAL'
         pom.packaging = 'jar'
     }
 }
