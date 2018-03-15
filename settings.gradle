@@ -1,1 +1,1 @@
-include ':translation-plugin' , ':translation-example'
+include ':translation-plugin'

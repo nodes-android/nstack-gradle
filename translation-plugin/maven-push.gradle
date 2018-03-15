@@ -10,7 +10,6 @@ def _description = 'Gradle extensions for NStack.io translations'
 def _ossrhUsername = this.properties['NEXUS_USERNAME']
 def _ossrhPassword = this.properties['NEXUS_PASSWORD']
 
-
 signing {
     required { gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
