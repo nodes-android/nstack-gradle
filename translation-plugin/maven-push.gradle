@@ -28,7 +28,7 @@ signing {
 
 jar {
     manifest {
-        attributes 'Implementation-Title': _name, 'Implementation-Version': _description
+        attributes 'Implementation-Title': _name, 'Implementation-Version': _version
     }
 }
 
