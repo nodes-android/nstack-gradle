@@ -1,8 +1,5 @@
 package dk.nstack.translation.plugin;
 
-/**
- * Created by joso on 06/05/16.
- */
 public class EmptyJavaClass {
 
     /**

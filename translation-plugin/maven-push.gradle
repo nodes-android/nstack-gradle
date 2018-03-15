@@ -1,7 +1,5 @@
 apply plugin: 'signing'
 apply plugin: 'maven'
-apply plugin: 'maven-publish'
-apply plugin: 'io.codearte.nexus-staging'
 
 // Username & password for Sonatype, stored in gradle.properties
 def _ossrhUsername = System.getenv('NEXUS_USERNAME')
@@ -69,7 +67,7 @@ uploadArchives {
             pom.project {
                 name _name
                 packaging 'jar'
-                artifactId archivesBaseName
+                artifactId _archivesBaseName
                 description _description
                 url 'https://github.com/nodes-android/nstack-gradle'
                 inceptionYear '2015'
