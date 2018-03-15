@@ -17,6 +17,10 @@ def _archivesBaseName = 'translation'
 def _name = 'NStack Gradle Plugin'
 def _description = 'Gradle extensions for NStack.io translations'
 
+nexusStaging {
+    packageGroup = "dk.nodes"
+}
+
 signing {
     required { gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
