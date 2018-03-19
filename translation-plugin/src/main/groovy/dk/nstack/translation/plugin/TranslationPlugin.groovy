@@ -41,6 +41,7 @@ class TranslationPlugin implements Plugin<Project> {
 
     private void generateTranslationClass() {
         String acceptHeader = project.translation.acceptHeader
+
         Log.info("Fetching: " + acceptHeader)
 
         Object translations = AssetManager.saveAllTranslationsToAssets()
