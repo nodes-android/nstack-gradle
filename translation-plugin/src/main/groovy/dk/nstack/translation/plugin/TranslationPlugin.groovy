@@ -3,6 +3,7 @@ package dk.nstack.translation.plugin
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
 import groovy.json.StringEscapeUtils
+import groovy.xml.MarkupBuilder
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -46,6 +47,7 @@ class TranslationPlugin implements Plugin<Project> {
 
         getTranslationPath()
         Object languageObject = translations[acceptHeader]
+        generateStringsResource(languageObject)
         generateJavaClass(languageObject)
     }
 
@@ -128,15 +130,40 @@ class TranslationPlugin implements Plugin<Project> {
      * @return String Inner static class with key/value strings
      */
     String generateInnerClass(className, data) {
-        println "generateInnerClass from: " + data
-
         def innerClass = "\tpublic final static class ${className} {\n"
+
         data.each {
             k, v ->
                 innerClass += "\t\tpublic static String ${k} = \"${StringEscapeUtils.escapeJava(v).replace("'", "\\'")}\";\n";
         }
+
         innerClass += "\t}\n"
 
         return innerClass
+    }
+
+    /**
+     * Write translation data to xml as a strings resource file
+     * @param json Result object of JsonSlurper parsing
+     * @param project Reference to project scope
+     */
+
+    void generateStringsResource(jsonSection) {
+        def sw = new StringWriter()
+        def xml = new MarkupBuilder(sw)
+
+        xml.resources() {
+            jsonSection.each {
+                i, j ->
+                    j.each {
+                        k, v ->
+                            string(name: "nstack_${i}_${k}", formatted: "false", "${i}_${k}")
+                    }
+            }
+        }
+
+        def stringsFile = new File(project.projectDir, project.translation.stringsPath)
+
+        stringsFile.write(sw.toString())
     }
 }

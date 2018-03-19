@@ -6,7 +6,7 @@ class TranslationExtension {
     String apiKey = ""
     String modelPath = null
     String classPath = null
-    String stringsPath = "src/main/res/values/translationstrings.xml"
+    String stringsPath = "src/main/res/values/nstack_keys.xml"
     String assetsPath = "src/main/assets/translations.json"
     String acceptHeader = 'en-US'
     boolean allLanguages = true
