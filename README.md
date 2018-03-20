@@ -1,3 +1,5 @@
+![nStack Badge](https://maven-badges.herokuapp.com/maven-central/dk.nodes.nstack/translation/badge.svg)
+
 # nstack-gradle
 
 Gradle plugin for [nstack.io](https://nstack.io) to generate various project files such as:
