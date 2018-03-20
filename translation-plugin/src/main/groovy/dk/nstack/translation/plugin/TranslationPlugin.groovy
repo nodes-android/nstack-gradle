@@ -3,6 +3,7 @@ package dk.nstack.translation.plugin
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
 import groovy.json.StringEscapeUtils
+import groovy.json.internal.LazyMap
 import groovy.xml.MarkupBuilder
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -44,12 +45,24 @@ class TranslationPlugin implements Plugin<Project> {
 
         Log.info("Fetching: " + acceptHeader)
 
-        Object translations = AssetManager.saveAllTranslationsToAssets()
+        LazyMap translations = AssetManager.saveAllTranslationsToAssets()
 
         getTranslationPath()
-        Object languageObject = translations[acceptHeader]
+        LazyMap languageObject = getTranslationForLocale(translations, acceptHeader)
         generateStringsResource(languageObject)
         generateJavaClass(languageObject)
+    }
+
+    private static LazyMap getTranslationForLocale(LazyMap translations, String string) {
+        Log.info("Searching for locale -> $string")
+
+        String[] availableLanguages = translations.keySet()
+
+        if (translations.containsKey(string)) {
+            return translations[string]
+        } else {
+            throw new Exception("Unable to locate a translation for $string, please check acceptHeader in project build.gradle \n\rCurrent available locales $availableLanguages")
+        }
     }
 
     /**
@@ -89,7 +102,7 @@ class TranslationPlugin implements Plugin<Project> {
     /**
      * Generate our Translation.java file to project.translation.classPath
      * */
-    void generateJavaClass(json) {
+    void generateJavaClass(LazyMap json) {
 
         def translationsFile = new File(project.translation.classPath)
 
@@ -149,16 +162,16 @@ class TranslationPlugin implements Plugin<Project> {
      * @param project Reference to project scope
      */
 
-    void generateStringsResource(jsonSection) {
+    static void generateStringsResource(LazyMap jsonSection) {
         def sw = new StringWriter()
         def xml = new MarkupBuilder(sw)
 
         xml.resources() {
             jsonSection.each {
-                i, j ->
+                String i, j ->
                     j.each {
-                        k, v ->
-                            string(name: "nstack_${i}_${k}", formatted: "false", "${i}_${k}")
+                        String k, String v ->
+                            string(name: "nstack_${i.trim()}_${k.trim()}", formatted: "false", "${i}_${k}")
                     }
             }
         }

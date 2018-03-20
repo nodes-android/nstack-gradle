@@ -41,12 +41,8 @@ class AssetManager {
         // Provide the url for downloading all translations
         String url = TranslationPlugin.project.translation.contentUrl + "?all=true"
 
-        println("Data Url: " + url)
-
         // Get our json string from the provided url
         String jsonString = Util.getTextFromUrl(url)
-
-        println("Data Content: " + jsonString)
 
         // Pull our json data from that json string we get
         return new JsonSlurper().parseText(jsonString).data
