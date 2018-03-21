@@ -2,10 +2,11 @@ package dk.nstack.translation.plugin
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import groovy.json.internal.LazyMap
 
 class AssetManager {
     public static final String FILE_NAME_ALL_TRANSLATIONS = "all_translations"
-    public static final String DIRECTORY_PATH_ASSETS = "/src/main/assets"
+    public static final String DIRECTORY_PATH_ASSETS = "${File.separator}src${File.separator}main${File.separator}assets"
 
     /**
      * Creates our assets folder to be used for downloading and storing our translation files
@@ -37,22 +38,26 @@ class AssetManager {
         return new File(directoryFile, translationFileName)
     }
 
-    private static Object getAllTranslations() {
+    private static LazyMap getAllTranslations() {
         // Provide the url for downloading all translations
         String url = TranslationPlugin.project.translation.contentUrl + "?all=true"
 
         // Get our json string from the provided url
         String jsonString = Util.getTextFromUrl(url)
 
+        if (jsonString.isEmpty()) {
+            return new LazyMap()
+        }
+
         // Pull our json data from that json string we get
         return new JsonSlurper().parseText(jsonString).data
     }
 
-    static Object saveAllTranslationsToAssets() {
+    static LazyMap saveAllTranslationsToAssets() {
         checkIfAssetsFolderExists()
 
         File translationPath = getAllTranslationsPath()
-        Object allTranslations = getAllTranslations()
+        LazyMap allTranslations = getAllTranslations()
 
         translationPath.text = JsonOutput.toJson(allTranslations)
 

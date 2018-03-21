@@ -10,11 +10,13 @@ import org.gradle.api.Project
 
 class TranslationPlugin implements Plugin<Project> {
     public static final String GROUP_NAME = "nstack"
-    public static final String JAVA_SOURCE_PATH = "/src/main/java"
+    public static
+    final String JAVA_SOURCE_PATH = "${File.separator}src${File.separator}main${File.separator}java"
     public static final String TRANSLATION_FILE_NAME = "Translation.java"
 
     def pathPrefix = ""
     public static Project project = null
+
 
     void apply(Project project) {
         this.project = project
@@ -30,11 +32,21 @@ class TranslationPlugin implements Plugin<Project> {
         }
 
         // Add the extension object
+
         project.extensions.create("translation", TranslationExtension)
 
         project.task('generateTranslationClass') {
             group GROUP_NAME
+
+            // If we have auto run update then we should run it :D
+
             doLast {
+                generateTranslationClass()
+            }
+        }
+
+        project.afterEvaluate {
+            if (project.translation.autoRunUpdate) {
                 generateTranslationClass()
             }
         }
@@ -93,7 +105,7 @@ class TranslationPlugin implements Plugin<Project> {
         int startOfIndex = possibleModelPath.indexOf(JAVA_SOURCE_PATH) + JAVA_SOURCE_PATH.size() + 1
         int endOfIndex = possibleModelPath.indexOf("Translation.java") - 1
         possibleModelPath = possibleModelPath.substring(startOfIndex, endOfIndex)
-        possibleModelPath = possibleModelPath.replace("/", ".")
+        possibleModelPath = possibleModelPath.replace(File.separator, ".")
 
         project.translation.modelPath = possibleModelPath
         project.translation.classPath = classFilePath
