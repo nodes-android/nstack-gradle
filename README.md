@@ -5,8 +5,8 @@
 Gradle plugin for [nstack.io](https://nstack.io) to generate various project files such as:
 
 + Translation.java (Model class for using translations)
-+ translationstrings.xml (Strings resource, if you're into that)
-+ translation.json (Asset file for offline/first run usage)
++ nstack_keys.xml (Strings resouces containing a list of all NStack keys to be used with the NStack Kotlin plugin)
++ all_translations.json (Asset file containing all our translations
 
 ### Setup
 
@@ -25,16 +25,18 @@ buildscript {
 ```
 
 Add this to your **Module** build.gradle:
+
 ```groovy
 apply plugin: 'dk.nstack.translation.plugin'
 
 translation {
     appId = "<generated app id from nstack.io>"
     apiKey = "<generated app key from nstack.io>"
-    acceptHeader = "<accept header e.g. da-DK>"
+    acceptHeader = "da-dk" // Accept header for which langauge we are selecting
+    autoRunUpdate = true // Should the gradle task auto update the translation assets/keys
 }
 ```
 
 ### Run
 
-Find the **generateTranslationClass** gradle task and run it. Located in :<project>/Tasks/Other.
+Find the **generateTranslationClass** gradle task and run it. Located in :<project>/nstack.
