@@ -130,7 +130,6 @@ class TranslationPlugin implements Plugin<Project> {
         translationClassString += "/**\n" +
                 " * Created by nstack.io gradle translation plugin\n" +
                 " * Built from Accept Header: ${project.translation.acceptHeader} \n" +
-                " * Generated: ${new Date().toString()} \n" +
                 " */\n\n"
         translationClassString += "public class Translation {\n"
         json.each {
