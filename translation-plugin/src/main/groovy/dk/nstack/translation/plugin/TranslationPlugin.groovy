@@ -10,11 +10,12 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 
 class TranslationPlugin implements Plugin<Project> {
+
     public static final String GROUP_NAME = "nstack"
-    public static RunMode RUN_MODE = RunMode.UNDEFINED
-    public static
-    final String JAVA_SOURCE_PATH = "${File.separator}src${File.separator}main${File.separator}java"
+    public static final String JAVA_SOURCE_PATH = "${File.separator}src${File.separator}main${File.separator}java"
     public static final String TRANSLATION_FILE_NAME = "Translation.java"
+
+    public static RunMode RUN_MODE = RunMode.UNDEFINED
 
     def pathPrefix = ""
     public static Project project = null

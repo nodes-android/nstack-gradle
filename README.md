@@ -19,7 +19,7 @@ buildscript {
     }
     dependencies {
         ...
-        classpath 'dk.nodes.nstack:translation:0.31'
+        classpath 'dk.nodes.nstack:translation:1.0.4'
     }
 }
 ```
@@ -40,3 +40,11 @@ translation {
 ### Run
 
 Find the **generateTranslationClass** gradle task and run it. Located in :<project>/nstack.
+
+### Run Mode
+
+Plugin automatically will try to identify app build type based on the tasks scheduled and set `RunMode` accordingly
+
+- `DEBUG` - when offline, plugin will get translations from assets (if available) without interrupting build process
+- `RELEASE` - Exception will be thrown when building offline
+- `UNDEFINED` - Default value (also set when there was an error identifying buldType). Behaves similar to `RELEASE` 
