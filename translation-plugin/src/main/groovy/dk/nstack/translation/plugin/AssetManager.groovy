@@ -4,6 +4,9 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.json.internal.LazyMap
 
+import java.nio.file.Files
+import java.nio.file.Paths
+
 class AssetManager {
     public static final String FILE_NAME_ALL_TRANSLATIONS = "all_translations"
     public static final String DIRECTORY_PATH_ASSETS = "${File.separator}src${File.separator}main${File.separator}assets"
@@ -45,12 +48,23 @@ class AssetManager {
         // Get our json string from the provided url
         String jsonString = Util.getTextFromUrl(url)
 
-        if (jsonString.isEmpty()) {
+        // Load translations from assets in case of error
+        if (jsonString == null) {
+            Log.error("Error getting from url, Getting from assets ")
+            return getTranslationsFromAssets()
+        } else if (jsonString.isEmpty()) {
             return new LazyMap()
         }
 
         // Pull our json data from that json string we get
-        return new JsonSlurper().parseText(jsonString).data
+        Log.info("From nstack: " + jsonString)
+        return  new JsonSlurper().parseText(jsonString).data
+    }
+
+    static LazyMap getTranslationsFromAssets() {
+        File translationPath = getAllTranslationsPath()
+        Log.info("From assets: " + translationPath.text)
+        return new JsonSlurper().parseText(translationPath.text)
     }
 
     static LazyMap saveAllTranslationsToAssets() {

@@ -7,12 +7,15 @@ import groovy.json.internal.LazyMap
 import groovy.xml.MarkupBuilder
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 
 class TranslationPlugin implements Plugin<Project> {
+
     public static final String GROUP_NAME = "nstack"
-    public static
-    final String JAVA_SOURCE_PATH = "${File.separator}src${File.separator}main${File.separator}java"
+    public static final String JAVA_SOURCE_PATH = "${File.separator}src${File.separator}main${File.separator}java"
     public static final String TRANSLATION_FILE_NAME = "Translation.java"
+
+    public static RunMode RUN_MODE = RunMode.UNDEFINED
 
     def pathPrefix = ""
     public static Project project = null
@@ -46,8 +49,16 @@ class TranslationPlugin implements Plugin<Project> {
         }
 
         project.afterEvaluate {
-            if (project.translation.autoRunUpdate) {
-                generateTranslationClass()
+            project.gradle.taskGraph.whenReady { graph ->
+
+                // Determine current buildType and Flavour by looking at one of the scheduled tasks name
+                Task firstTask = graph.getAllTasks().first()
+                RUN_MODE = RunMode.parse(firstTask.name)
+
+                if (project.translation.autoRunUpdate) {
+                    generateTranslationClass()
+                }
+
             }
         }
     }
@@ -56,6 +67,7 @@ class TranslationPlugin implements Plugin<Project> {
         String acceptHeader = project.translation.acceptHeader
 
         Log.info("Fetching: " + acceptHeader)
+        Log.info("Current Plugin Run Mode : " + RUN_MODE)
 
         LazyMap translations = AssetManager.saveAllTranslationsToAssets()
 
@@ -64,6 +76,7 @@ class TranslationPlugin implements Plugin<Project> {
         generateStringsResource(languageObject)
         generateJavaClass(languageObject)
     }
+
 
     private static LazyMap getTranslationForLocale(LazyMap translations, String string) {
         Log.info("Searching for locale -> $string")
