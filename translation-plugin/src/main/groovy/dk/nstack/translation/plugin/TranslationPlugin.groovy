@@ -182,7 +182,7 @@ class TranslationPlugin implements Plugin<Project> {
                 String i, j ->
                     j.each {
                         String k, String v ->
-                            string(name: "nstack_${i.trim()}_${k.trim()}", formatted: "false", "${i}_${k}")
+                            string(name: "nstack_${i.trim()}_${k.trim()}", formatted: "false", "{${i}_${k}}")
                     }
             }
         }

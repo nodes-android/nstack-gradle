@@ -18,7 +18,6 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        ...
         classpath 'dk.nodes.nstack:translation:0.31'
     }
 }
