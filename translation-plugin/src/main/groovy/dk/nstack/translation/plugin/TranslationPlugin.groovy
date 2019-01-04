@@ -41,6 +41,15 @@ class TranslationPlugin implements Plugin<Project> {
             // If we have auto run update then we should run it :D
 
             doLast {
+                if(project.hasProperty("nstackAppId")) {
+                    Log.info("Gradle task had custom appId set: " + project.getProperties().get("nstackAppId"))
+                    project.translation.appId = project.getProperties().get("nstackAppId")
+                }
+
+                if(project.hasProperty("nstackApiKey")) {
+                    Log.info("Gradle task had custom apiKey set: " + project.getProperties().get("nstackApiKey"))
+                    project.translation.apiKey = project.getProperties().get("nstackApiKey")
+                }
                 generateTranslationClass()
             }
         }
