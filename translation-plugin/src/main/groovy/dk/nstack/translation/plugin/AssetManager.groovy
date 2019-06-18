@@ -5,7 +5,6 @@ import groovy.json.JsonSlurper
 import groovy.json.internal.LazyMap
 
 class AssetManager {
-    public static final String FILE_NAME_ALL_TRANSLATIONS = "all_translations"
     public static final String DIRECTORY_PATH_ASSETS = "${File.separator}src${File.separator}main${File.separator}assets"
 
     /**
@@ -28,38 +27,39 @@ class AssetManager {
         }
     }
 
-    /**
-     * Get all translations from nStack
-     */
-
-    private static File getAllTranslationsPath() {
-        String translationFileName = FILE_NAME_ALL_TRANSLATIONS + ".json"
+    private static File getTranslationsPath(int index, String lang) {
+        String translationFileName = "translations_${index}_${lang}.json"
         File directoryFile = new File(TranslationPlugin.project.projectDir, DIRECTORY_PATH_ASSETS)
         return new File(directoryFile, translationFileName)
     }
 
-    private static LazyMap getAllTranslations() {
-        // Provide the url for downloading all translations
-        String url = TranslationPlugin.project.translation.contentUrl + "?all=true"
-
-        // Get our json string from the provided url
+    private static LazyMap getTranslationsFrom(String url) {
         String jsonString = Util.getTextFromUrl(url)
-
         if (jsonString.isEmpty()) {
             return new LazyMap()
         }
-
-        // Pull our json data from that json string we get
         return new JsonSlurper().parseText(jsonString).data
     }
 
     static LazyMap saveAllTranslationsToAssets() {
         checkIfAssetsFolderExists()
 
-        File translationPath = getAllTranslationsPath()
-        LazyMap allTranslations = getAllTranslations()
+        String url = TranslationPlugin.project.translation.contentUrl + "api/v2/localize/resources/platforms/mobile"
+        String indexJson = Util.getTextFromUrl(url)
+        if (indexJson.isEmpty()) {
+            return new LazyMap()
+        }
 
-        translationPath.text = JsonOutput.toJson(allTranslations)
+        LazyMap allTranslations = new LazyMap()
+
+        ArrayList indexResults = new JsonSlurper().parseText(indexJson)
+        indexResults.eachWithIndex { result, index ->
+            String locale = result.language.locale
+            File path = getTranslationsPath(index, locale)
+            LazyMap translations = getTranslationsFrom(result.url)
+            path.text = JsonOutput.toJson(translations)
+            allTranslations[locale] = translations
+        }
 
         return allTranslations
     }
