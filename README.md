@@ -6,7 +6,7 @@ Gradle plugin for [nstack.io](https://nstack.io) to generate various project fil
 
 + Translation.java (Model class for using translations)
 + nstack_keys.xml (Strings resouces containing a list of all NStack keys to be used with the NStack Kotlin plugin)
-+ all_translations.json (Asset file containing all our translations
++ translations_{index}_{locale}.json files in assets folder. Each of them contains translations for corresponding locale.
 
 ### Setup
 
@@ -18,7 +18,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'dk.nodes.nstack:translation:0.31'
+        classpath "dk.nodes.nstack:translation:${nstack_plugin_version}"
     }
 }
 ```
