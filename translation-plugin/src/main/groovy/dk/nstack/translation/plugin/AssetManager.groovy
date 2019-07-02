@@ -5,6 +5,7 @@ import groovy.json.JsonSlurper
 import groovy.json.internal.LazyMap
 
 class AssetManager {
+
     public static final String DIRECTORY_PATH_ASSETS = "${File.separator}src${File.separator}main${File.separator}assets"
 
     /**
@@ -33,6 +34,14 @@ class AssetManager {
         return new File(directoryFile, translationFileName)
     }
 
+    private static void removePreviousTranslations() {
+        new File(TranslationPlugin.project.projectDir, DIRECTORY_PATH_ASSETS).traverse {
+            if (it.name.contains("translations_")) {
+                it.delete()
+            }
+        }
+    }
+
     private static LazyMap getTranslationsFrom(String url) {
         String jsonString = Util.getTextFromUrl(url)
         if (jsonString.isEmpty()) {
@@ -49,6 +58,8 @@ class AssetManager {
         if (indexJson.isEmpty()) {
             return new LazyMap()
         }
+
+        removePreviousTranslations()
 
         LazyMap allTranslations = new LazyMap()
 
