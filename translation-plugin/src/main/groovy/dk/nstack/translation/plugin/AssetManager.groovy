@@ -53,7 +53,7 @@ class AssetManager {
     static LazyMap saveAllTranslationsToAssets() {
         checkIfAssetsFolderExists()
 
-        String url = TranslationPlugin.project.translation.contentUrl + "api/v2/localize/resources/platforms/mobile"
+        String url = TranslationPlugin.project.translation.contentUrl + "api/v2/content/localize/resources/platforms/mobile"
         String indexJson = Util.getTextFromUrl(url)
         if (indexJson.isEmpty()) {
             return new LazyMap()
