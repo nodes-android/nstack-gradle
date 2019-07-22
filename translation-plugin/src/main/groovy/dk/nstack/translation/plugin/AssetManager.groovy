@@ -71,7 +71,23 @@ class AssetManager {
             path.text = JsonOutput.toJson(translations)
             allTranslations[locale] = translations
         }
+        saveDefaultLanguageToAssets()
 
         return allTranslations
+    }
+
+    static void saveDefaultLanguageToAssets() {
+        String url = TranslationPlugin.project.translation.contentUrl + "api/v2/content/localize/mobile/languages"
+        String json = Util.getTextFromUrl(url)
+        ArrayList languageList = new JsonSlurper().parseText(json).data
+        languageList.eachWithIndex { def language, int index ->
+            boolean isDefault = language.is_default
+            if (isDefault) {
+                File directoryFile = new File(TranslationPlugin.project.projectDir, DIRECTORY_PATH_ASSETS)
+                String translationFileName = "translations_${index}_${language.locale}.json"
+                File defaultLanguage = new File(directoryFile, "defaultLanguage.txt")
+                defaultLanguage.text = translationFileName
+            }
+        }
     }
 }
