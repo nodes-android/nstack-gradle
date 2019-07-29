@@ -3,7 +3,6 @@ package dk.nstack.translation.plugin
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
 import groovy.json.StringEscapeUtils
-import groovy.json.internal.LazyMap
 import groovy.xml.MarkupBuilder
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -66,15 +65,15 @@ class TranslationPlugin implements Plugin<Project> {
 
         Log.info("Fetching: " + acceptHeader)
 
-        LazyMap translations = AssetManager.saveAllTranslationsToAssets()
+        Map translations = AssetManager.saveAllTranslationsToAssets()
 
         getTranslationPath()
-        LazyMap languageObject = getTranslationForLocale(translations, acceptHeader)
+        HashMap languageObject = getTranslationForLocale(translations, acceptHeader)
         generateStringsResource(languageObject)
         generateJavaClass(languageObject)
     }
 
-    private static LazyMap getTranslationForLocale(LazyMap translations, String string) {
+    private static Map getTranslationForLocale(Map translations, String string) {
         Log.info("Searching for locale -> $string")
 
         String[] availableLanguages = translations.keySet()
@@ -123,7 +122,7 @@ class TranslationPlugin implements Plugin<Project> {
     /**
      * Generate our Translation.java file to project.translation.classPath
      * */
-    void generateJavaClass(LazyMap json) {
+    void generateJavaClass(Map json) {
 
         def translationsFile = new File(project.translation.classPath)
 
@@ -182,7 +181,7 @@ class TranslationPlugin implements Plugin<Project> {
      * @param project Reference to project scope
      */
 
-    static void generateStringsResource(LazyMap jsonSection) {
+    static void generateStringsResource(Map jsonSection) {
         def sw = new StringWriter()
         def xml = new MarkupBuilder(sw)
 
