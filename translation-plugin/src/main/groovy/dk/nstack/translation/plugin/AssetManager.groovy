@@ -46,17 +46,24 @@ class AssetManager {
         if (jsonString.isEmpty()) {
             return new HashMap()
         }
-        return new JsonSlurper().parseText(jsonString).data
+        Log.debug("Result url: " + url)
+
+        def data = new JsonSlurper().parseText(jsonString).data
+        Log.debug("data: " + jsonString)
+        return data
     }
 
     static Map saveAllTranslationsToAssets() {
         checkIfAssetsFolderExists()
 
         String url = TranslationPlugin.project.translation.contentUrl + "api/v2/content/localize/resources/platforms/mobile"
+        Log.debug("Full url: " + url)
         String indexJson = Util.getTextFromUrl(url)
         if (indexJson.isEmpty()) {
             return new HashMap()
         }
+
+        Log.debug("indexJson: " + indexJson)
 
         removePreviousTranslations()
 

@@ -1,1 +1,2 @@
 include ':translation-plugin'
+include ':myapplication'
