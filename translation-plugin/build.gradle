@@ -10,7 +10,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'com.android.tools.build:gradle:3.0.1'
+    compile 'com.android.tools.build:gradle:3.4.2'
 }
 
 task installArchives(type: Upload) {
@@ -20,7 +20,8 @@ task installArchives(type: Upload) {
         configuration = configurations.default
         pom.groupId = 'dk.nodes.nstack'
         pom.artifactId = 'translation'
-        pom.version = '3.0.2-LOCAL'
+        pom.version = '3.0.2.1-LOCAL'
         pom.packaging = 'jar'
     }
 }
+signArchives
