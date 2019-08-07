@@ -69,7 +69,7 @@ class AssetManager {
 
         Map allTranslations = new HashMap()
 
-        ArrayList indexResults = new JsonSlurper().parseText(indexJson)
+        ArrayList indexResults = new JsonSlurper().parseText(indexJson).data
         indexResults.eachWithIndex { result, index ->
             String locale = result.language.locale
             File path = getTranslationsPath(index, locale)
