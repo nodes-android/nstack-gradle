@@ -2,7 +2,6 @@ package dk.nstack.translation.plugin
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import groovy.json.internal.LazyMap
 
 class AssetManager {
 
@@ -42,32 +41,39 @@ class AssetManager {
         }
     }
 
-    private static LazyMap getTranslationsFrom(String url) {
+    private static Map getTranslationsFrom(String url) {
         String jsonString = Util.getTextFromUrl(url)
         if (jsonString.isEmpty()) {
-            return new LazyMap()
+            return new HashMap()
         }
-        return new JsonSlurper().parseText(jsonString).data
+        Log.debug("Result url: " + url)
+
+        def data = new JsonSlurper().parseText(jsonString).data
+        Log.debug("data: " + jsonString)
+        return data
     }
 
-    static LazyMap saveAllTranslationsToAssets() {
+    static Map saveAllTranslationsToAssets() {
         checkIfAssetsFolderExists()
 
         String url = TranslationPlugin.project.translation.contentUrl + "api/v2/content/localize/resources/platforms/mobile"
+        Log.debug("Full url: " + url)
         String indexJson = Util.getTextFromUrl(url)
         if (indexJson.isEmpty()) {
-            return new LazyMap()
+            return new HashMap()
         }
+
+        Log.debug("indexJson: " + indexJson)
 
         removePreviousTranslations()
 
-        LazyMap allTranslations = new LazyMap()
+        Map allTranslations = new HashMap()
 
-        ArrayList indexResults = new JsonSlurper().parseText(indexJson)
+        ArrayList indexResults = new JsonSlurper().parseText(indexJson).data
         indexResults.eachWithIndex { result, index ->
             String locale = result.language.locale
             File path = getTranslationsPath(index, locale)
-            LazyMap translations = getTranslationsFrom(result.url)
+            Map translations = getTranslationsFrom(result.url)
             path.text = JsonOutput.toJson(translations)
             allTranslations[locale] = translations
         }
